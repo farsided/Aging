@@ -30,10 +30,10 @@ namespace Aging
 
             int dayIt = start.Day;
 
-            int years;
-            int months;
-            int weeks;
-            int days;
+            int years = 0;
+            int months = 0;
+            int weeks = 0;
+            int days = 0;
             int tempMonth = start.Month;
             //DateTime.DaysInMonth
             for (int yearIt = start.Year; yearIt < end.Year;)
@@ -48,38 +48,40 @@ namespace Aging
                 {
                     Console.WriteLine($"{dayIt}/{(monthIt%12)+1}/{yearIt}\nDays in Month: {DateTime.DaysInMonth(yearIt, (monthIt % 12) + 1)}");
                     Console.ReadLine();
-                    if (DateTime.IsLeapYear(yearIt))
-                    {
-                        Console.WriteLine($"Is Leap Year: {DateTime.IsLeapYear(yearIt)}");
-                    }
+                    
                     if(((monthIt % 12) + 1) == 12)
                     {
                         yearIt = ( end.Year + 1) ;
                     }
+                    months++;
+
+                    years = Convert.ToInt32(Math.Floor(Convert.ToDecimal(months / 12)));
+                    if(years > 0)
+                    {
+                        Console.WriteLine($"years: {years}\nmonths: {months%12}");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"months: {months%12}");
+                    }
+                    
                 }
                 tempMonth = 0;
                 yearIt = tempYear + 1;
-
+                
+                
             }
-
-            Console.WriteLine($"start date: {start}");
-            Console.WriteLine($"start Year: {start.Year}");
-            Console.WriteLine($"start Month: {start.Month}");
-            Console.WriteLine($"start Day: {start.Day}");
-
-            Console.WriteLine($"end date: {end}");
-            Console.WriteLine($"end Year: {end.Year}");
-            Console.WriteLine($"end Month: {end.Month}");
-            Console.WriteLine($"end Day: {end.Day}");
-
             
-            Console.ReadLine();
-            for (int yearIt = 0; yearIt < 100 ; yearIt++ ) {
-                for (int monthIt = 0; monthIt < 100; monthIt++)
-                {
+            //Console.WriteLine($"start date: {start}");
+            //Console.WriteLine($"start Year: {start.Year}");
+            //Console.WriteLine($"start Month: {start.Month}");
+            //Console.WriteLine($"start Day: {start.Day}");
 
-                }
-            }
+            //Console.WriteLine($"end date: {end}");
+            //Console.WriteLine($"end Year: {end.Year}");
+            //Console.WriteLine($"end Month: {end.Month}");
+            //Console.WriteLine($"end Day: {end.Day}");
+            
                 
         }
     }
