@@ -61,10 +61,6 @@ namespace Aging
                     years = Convert.ToInt32(Math.Floor(Convert.ToDecimal(months / 12)));
                     if (years > 0)
                     {
-                        if ((months % 12) == 0)
-                        {
-                            //months = 0;
-                        }
                         Console.WriteLine($"years: {years}\nmonths: {months % 12}");
                     }
                     else if (years < 1)
@@ -75,7 +71,6 @@ namespace Aging
                     {
                         Console.WriteLine($"months: {months % 12}");
                     }
-
                 }
                 tempMonth = 0;
                 yearIt = tempYear + 1;
