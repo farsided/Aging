@@ -35,36 +35,47 @@ namespace Aging
             int weeks = 0;
             int days = 0;
             int tempMonth = start.Month;
-            //DateTime.DaysInMonth
+            int tempDay = start.Day;
+
             for (int yearIt = start.Year; yearIt < end.Year;)
             {
                 DateTime date;
                 int tempYear = yearIt;
                 
                 //Console.WriteLine($"{dayIt}/{7}/{yearIt} 12:00:00 AM");
-                for (   int monthIt = tempMonth; 
-                        ( date = Convert.ToDateTime($"{(monthIt%12)+1}/{dayIt}/{yearIt} 12:00:00 AM", culture) ) <= end;
-                        monthIt++   )
+                for (int monthIt = tempMonth; ( date = Convert.ToDateTime($"{(monthIt%12)+1}/{dayIt}/{yearIt} 12:00:00 AM", culture) ) <= end; monthIt++)
                 {
-                    Console.WriteLine($"{dayIt}/{(monthIt%12)+1}/{yearIt}\nDays in Month: {DateTime.DaysInMonth(yearIt, (monthIt % 12) + 1)}");
-                    Console.ReadLine();
-                    
-                    if(((monthIt % 12) + 1) == 12)
+                    //Console.WriteLine($"{dayIt}/{(monthIt%12)+1}/{yearIt}\nDays in Month: {DateTime.DaysInMonth(yearIt, (monthIt % 12) + 1)}");
+                    for(; ( Convert.ToDateTime($"{(monthIt % 12) + 1}/{dayIt}/{yearIt} 12:00:00 AM", culture) ) <= end ; tempDay++)
                     {
-                        yearIt = ( end.Year + 1) ;
+                        
+                    }
+                    Console.ReadLine();
+
+                    if (((monthIt % 12) + 1) == 12)
+                    {
+                        yearIt = (end.Year + 1);
                     }
                     months++;
 
                     years = Convert.ToInt32(Math.Floor(Convert.ToDecimal(months / 12)));
-                    if(years > 0)
+                    if (years > 0)
                     {
-                        Console.WriteLine($"years: {years}\nmonths: {months%12}");
+                        if ((months % 12) == 0)
+                        {
+                            //months = 0;
+                        }
+                        Console.WriteLine($"years: {years}\nmonths: {months % 12}");
                     }
-                    else
+                    else if (years < 1)
                     {
-                        Console.WriteLine($"months: {months%12}");
+                        Console.WriteLine($"months: {months % 12}");
                     }
-                    
+                    else if (months < 1)
+                    {
+                        Console.WriteLine($"months: {months % 12}");
+                    }
+
                 }
                 tempMonth = 0;
                 yearIt = tempYear + 1;
