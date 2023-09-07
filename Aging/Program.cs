@@ -34,15 +34,15 @@ namespace Aging
             int months;
             int weeks;
             int days;
-
-
+            int tempMonth = start.Month;
             //DateTime.DaysInMonth
             for (int yearIt = start.Year; yearIt < end.Year;)
             {
-                
                 DateTime date;
+                int tempYear = yearIt;
+                
                 //Console.WriteLine($"{dayIt}/{7}/{yearIt} 12:00:00 AM");
-                for (   int monthIt = start.Month; 
+                for (   int monthIt = tempMonth; 
                         ( date = Convert.ToDateTime($"{(monthIt%12)+1}/{dayIt}/{yearIt} 12:00:00 AM", culture) ) <= end;
                         monthIt++   )
                 {
@@ -52,12 +52,14 @@ namespace Aging
                     {
                         Console.WriteLine($"Is Leap Year: {DateTime.IsLeapYear(yearIt)}");
                     }
-                    if((((monthIt % 12) + 1) == 12))
+                    if(((monthIt % 12) + 1) == 12)
                     {
-                        yearIt++;
+                        yearIt = ( end.Year + 1) ;
                     }
-
                 }
+                tempMonth = 0;
+                yearIt = tempYear + 1;
+
             }
 
             Console.WriteLine($"start date: {start}");
