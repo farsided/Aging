@@ -137,7 +137,7 @@ namespace Aging
 
         public static Range<T> ToRange(IEnumerable<T> list)
         {
-            return (Range<T>)list.ToList();
+            return (Range<T>)list;
         }
 
         public Range<T> SelectIncludedRange(Range<T> sortedListAsc, T start, T end)
