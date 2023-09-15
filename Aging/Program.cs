@@ -14,29 +14,62 @@ namespace Aging
             CultureInfo culture = new CultureInfo("en-US");
 
             DateTime start;
-            DateTime end;
-            TimeSpan span;
+            //DateTime end;
+            //TimeSpan span;
 
-            var startFormat = "dd/MM/yyyy hh:mm:ss tt";
-            var endFormat = "dd/MM/yyyy hh:mm:ss tt";
+            //var startFormat = "dd/MM/yyyy hh:mm:ss tt";
+            //var endFormat = "dd/MM/yyyy hh:mm:ss tt";
 
-            var s = "09/15/2023 12:00:00 AM";
+            var s = "09/01/2023 12:00:00 AM";
             var e = "09/14/2002 11:00:00 PM";
 
             start = Convert.ToDateTime(s, culture);
-            end = Convert.ToDateTime(e, culture);
+            //end = Convert.ToDateTime(e, culture);
 
-            Console.WriteLine(start);
-            //Console.WriteLine(end);
+            //Console.WriteLine(start);
+            ////Console.WriteLine(end);
 
-            Age age = new Age(start);
-            Console.WriteLine( $"Years: {age.Years}\nMonths: {age.Months}\nDays: {age.Days}" );
-            Console.WriteLine($"CurrentDate: {age.current}");
+            //Age age = new Age(start);
+            //Console.WriteLine( $"Years: {age.Years}\nMonths: {age.Months}\nDays: {age.Days}" );
+            //Console.WriteLine($"CurrentDate: {age.current}");
+
+            List<DateTime> dtList = new List<DateTime>();
+            dtList.Add(start.AddDays(3));
+            dtList.Add(start.AddDays(4));
+            dtList.Add(start.AddDays(9));
+            dtList.Add(start.AddDays(1));
+            dtList.Add(start.AddDays(11));
+            dtList.Add(start.AddDays(0));
+            dtList.Add(start.AddDays(1));
+
+            foreach(DateTime dt in dtList)
+            {
+                Console.WriteLine(dt);
+            }
+
+            Console.WriteLine("Sorted Dates");
+
+
+            dtList.Sort();
+            foreach (DateTime dt in dtList)
+            {
+                Console.WriteLine(dt);
+            }
+
+
+            Console.WriteLine($"Included Dates from {start}");
+            List<DateTime> d = Day.IncludedDates(dtList, start.AddDays(4));
+            foreach (DateTime dt in d)
+            {
+                Console.WriteLine(dt);
+            }
+
+
             Console.ReadLine();
         }
     }
 
-    public class Age
+    public class Day
     {
         enum DayType
         {
@@ -47,8 +80,28 @@ namespace Aging
             SpecialNonWorkingHoliday,
             RegularHoliday,
             Absentday,
+            LateDay,
             LeaveDay,
         }
+
+        public static List<DateTime> IncludedDates(List<DateTime> sortedListAsc, DateTime start, DateTime? end = null)
+        {
+            end = end ?? DateTime.Now;
+            List<DateTime> temp = new List<DateTime>();
+            for(int x = 0; x < sortedListAsc.Count; x++)
+            {
+                if(sortedListAsc[x]>=start && sortedListAsc[x] <= end)
+                {
+                    temp.Add(sortedListAsc[x]);
+                }   
+            }
+            return temp;
+        }
+    }
+
+    public class Age
+    {
+        
 
         public DateTime start { get; set; }
         public DateTime end { get; set; }
@@ -139,7 +192,9 @@ namespace Aging
 
         public int GetDay(DateTime start, DateTime? End = null)
         {
-            return ((DateTime)End - start).Days;//(int)Math.Floor((((DateTime)End - start).TotalHours / 24));
+            int dayDiff = ((DateTime)End - start).Days;
+            current = current.AddDays(dayDiff);
+            return dayDiff;//(int)Math.Floor((((DateTime)End - start).TotalHours / 24));
         }
     }
 
