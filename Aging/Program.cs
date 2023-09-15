@@ -111,6 +111,16 @@ namespace Aging
             return !((leftHand.Where(x => x != null).Count()) == rightHand.Where(x => x != null).Count());
         }
 
+        public static bool operator ==(Range<T> leftHand, Range<T> rightHand)
+        {
+            return ((leftHand.Where(x => x != null).Count()) == rightHand.Where(x => x != null).Count());
+        }
+
+        public static bool operator !=(Range<T> leftHand, Range<T> rightHand)
+        {
+            return !((leftHand.Where(x => x != null).Count()) == rightHand.Where(x => x != null).Count());
+        }
+
         #endregion
 
         #region assignment operator overloading : +, -
