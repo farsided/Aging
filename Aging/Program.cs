@@ -77,8 +77,9 @@ namespace Aging
         public int endIdx { get; set; }
         public List<T> list { get; set; }
 
+        public Range() { }
 
-        #region operator comparator overlording : >, <, >=, <=
+        #region operator comparator overlording : >, <, >=, <=, ==, !=
 
         public static bool operator >(Range<T> leftHand, Range<T> rightHand)
         {
@@ -100,9 +101,19 @@ namespace Aging
             return !((leftHand.Where(x => x != null).Count()) > rightHand.Where(x => x != null).Count());
         }
 
+        public static bool operator ==(Range<T> leftHand, Range<T> rightHand)
+        {
+            return ((leftHand.Where(x => x != null).Count()) == rightHand.Where(x => x != null).Count());
+        }
+
+        public static bool operator !=(Range<T> leftHand, Range<T> rightHand)
+        {
+            return !((leftHand.Where(x => x != null).Count()) == rightHand.Where(x => x != null).Count());
+        }
+
         #endregion
 
-        #region assignment operator overloading : +, -, ++, --
+        #region assignment operator overloading : +, -
 
         public static Range<T> operator +(Range<T> range, T item)
         {
@@ -116,37 +127,24 @@ namespace Aging
             return range;
         }
 
-        public static bool operator ==(Range<T> range, Range<T> list)
-        {
-            range.AddRange(list);
-            return range;
-        }
-
         public static Range<T> operator -(Range<T> range, T item)
         {
-            range.RemoveAll(it => it == item) ;
+            range.RemoveAll(it => EqualityComparer<T>.Default.Equals(it, item) ) ;
             return range;
         }
-
-
 
         #endregion
 
-
-
-        public List<T> SelectIncludedRange(List<T> sortedListAsc, T start, T end)
+        public static Range<T> ToRange(IEnumerable<T> list)
         {
-
-            List<T> temp = new List<T>();
-            for (int x = 0; x < sortedListAsc.Count; x++)
-            {
-                if (sortedListAsc[x] >= start && sortedListAsc[x] <= end)
-                {
-                    temp.Add(sortedListAsc[x]);
-                }
-            }
-            return sortedList;
+            return (Range<T>)list.ToList();
         }
+
+        public Range<T> SelectIncludedRange(Range<T> sortedListAsc, T start, T end)
+        {
+            return ToRange(sortedListAsc.Where(x => (Convert.ToInt16(x) >= Convert.ToInt16(start) && Convert.ToInt16(x) <= Convert.ToInt16(end)))) ;
+        }
+
     }
 
     public class Day
