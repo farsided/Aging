@@ -20,7 +20,7 @@ namespace Aging
             var startFormat = "dd/MM/yyyy hh:mm:ss tt";
             var endFormat = "dd/MM/yyyy hh:mm:ss tt";
 
-            var s = "07/25/2023 12:00:00 AM";
+            var s = "09/15/2023 12:00:00 AM";
             var e = "09/14/2002 11:00:00 PM";
 
             start = Convert.ToDateTime(s, culture);
@@ -44,8 +44,10 @@ namespace Aging
             Weekend,
             Workday,
             SpecialHoliday,
+            SpecialNonWorkingHoliday,
             RegularHoliday,
-            Absentday
+            Absentday,
+            LeaveDay,
         }
 
         public DateTime start { get; set; }
@@ -138,6 +140,16 @@ namespace Aging
         public int GetDay(DateTime start, DateTime? End = null)
         {
             return ((DateTime)End - start).Days;//(int)Math.Floor((((DateTime)End - start).TotalHours / 24));
+        }
+    }
+
+    class Rate
+    {
+        enum RateType
+        {
+            WorkedRegular,
+            UnworkedRegular,
+
         }
     }
 }
