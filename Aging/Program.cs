@@ -64,8 +64,88 @@ namespace Aging
                 Console.WriteLine(dt);
             }
 
-
+            Console.WriteLine(Day.IncludedIdx(dtList, start.AddDays(4)));
             Console.ReadLine();
+
+            
+        }
+    }
+
+    public class Range<T> : List<T>
+    {
+        public int startIdx { get; set; }
+        public int endIdx { get; set; }
+        public List<T> list { get; set; }
+
+
+        #region operator comparator overlording : >, <, >=, <=
+
+        public static bool operator >(Range<T> leftHand, Range<T> rightHand)
+        {
+            return ((leftHand.Where(x => x != null).Count()) > rightHand.Where(x => x != null).Count());
+        }
+
+        public static bool operator <(Range<T> leftHand, Range<T> rightHand)
+        {
+            return !((leftHand.Where(x => x != null).Count()) > rightHand.Where(x => x != null).Count());
+        }
+
+        public static bool operator >=(Range<T> leftHand, Range<T> rightHand)
+        {
+            return ((leftHand.Where(x => x != null).Count()) > rightHand.Where(x => x != null).Count());
+        }
+
+        public static bool operator <=(Range<T> leftHand, Range<T> rightHand)
+        {
+            return !((leftHand.Where(x => x != null).Count()) > rightHand.Where(x => x != null).Count());
+        }
+
+        #endregion
+
+        #region assignment operator overloading : +, -, ++, --
+
+        public static Range<T> operator +(Range<T> range, T item)
+        {
+            range.Add(item);
+            return range;
+        }
+
+        public static Range<T> operator +(Range<T> range, Range<T> list)
+        {
+            range.AddRange(list);
+            return range;
+        }
+
+        public static bool operator ==(Range<T> range, Range<T> list)
+        {
+            range.AddRange(list);
+            return range;
+        }
+
+        public static Range<T> operator -(Range<T> range, T item)
+        {
+            range.RemoveAll(it => it == item) ;
+            return range;
+        }
+
+
+
+        #endregion
+
+
+
+        public List<T> SelectIncludedRange(List<T> sortedListAsc, T start, T end)
+        {
+
+            List<T> temp = new List<T>();
+            for (int x = 0; x < sortedListAsc.Count; x++)
+            {
+                if (sortedListAsc[x] >= start && sortedListAsc[x] <= end)
+                {
+                    temp.Add(sortedListAsc[x]);
+                }
+            }
+            return sortedList;
         }
     }
 
@@ -96,6 +176,24 @@ namespace Aging
                 }   
             }
             return temp;
+        }
+
+        public static KeyValuePair<int, int> IncludedIdx(List<DateTime> sortedListAsc, DateTime start, DateTime? end = null)
+        {
+            end = end ?? DateTime.Now;
+            int? startIdx = null;
+            int? endIdx = null;
+            for (int x = 0; x < sortedListAsc.Count; x++)
+            {
+                startIdx = (startIdx == null) ? ((sortedListAsc[x] >= start && sortedListAsc[x] <= end) ? x : (int?)(null) ) : startIdx;
+                if (startIdx != null) break;
+            }
+            for (int x = sortedListAsc.Count - 1; x >= 0; x++)
+            {
+                endIdx = (endIdx == null) ? ((sortedListAsc[x] >= start && sortedListAsc[x] <= end) ? x : (int?)(null)) : endIdx;
+                if (endIdx != null) break;
+            }
+            return new KeyValuePair<int, int>( (int)startIdx, (int)endIdx );
         }
     }
 
