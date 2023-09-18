@@ -14,60 +14,63 @@ namespace Aging
             CultureInfo culture = new CultureInfo("en-US");
 
             DateTime start;
-            //DateTime end;
+            DateTime end;
             //TimeSpan span;
 
             //var startFormat = "dd/MM/yyyy hh:mm:ss tt";
             //var endFormat = "dd/MM/yyyy hh:mm:ss tt";
 
-            var s = "09/01/2023 12:00:00 AM";
-            var e = "09/14/2002 11:00:00 PM";
+            var s = "03/28/2022 12:00:00 AM";
+            var e = "03/28/2022 11:02:08 PM";
 
             start = Convert.ToDateTime(s, culture);
-            //end = Convert.ToDateTime(e, culture);
+            end = Convert.ToDateTime(e, culture);
 
             //Console.WriteLine(start);
             ////Console.WriteLine(end);
 
-            //Age age = new Age(start);
+            Age age = new Age(start, end);
             //Console.WriteLine( $"Years: {age.Years}\nMonths: {age.Months}\nDays: {age.Days}" );
             //Console.WriteLine($"CurrentDate: {age.current}");
 
-            List<DateTime> dtList = new List<DateTime>();
-            dtList.Add(start.AddDays(3));
-            dtList.Add(start.AddDays(4));
-            dtList.Add(start.AddDays(9));
-            dtList.Add(start.AddDays(1));
-            dtList.Add(start.AddDays(11));
-            dtList.Add(start.AddDays(0));
-            dtList.Add(start.AddDays(1));
+            //included dates [start]
+            //List<DateTime> dtList = new List<DateTime>();
+            //dtList.Add(start.AddDays(3));
+            //dtList.Add(start.AddDays(4));
+            //dtList.Add(start.AddDays(9));
+            //dtList.Add(start.AddDays(1));
+            //dtList.Add(start.AddDays(11));
+            //dtList.Add(start.AddDays(0));
+            //dtList.Add(start.AddDays(1));
 
-            foreach(DateTime dt in dtList)
-            {
-                Console.WriteLine(dt);
-            }
+            //foreach(DateTime dt in dtList)
+            //{
+            //    Console.WriteLine(dt);
+            //}
 
-            Console.WriteLine("Sorted Dates");
+            //Console.WriteLine("Sorted Dates");
 
+            //dtList.Sort();
+            //foreach (DateTime dt in dtList)
+            //{
+            //    Console.WriteLine(dt);
+            //}
 
-            dtList.Sort();
-            foreach (DateTime dt in dtList)
-            {
-                Console.WriteLine(dt);
-            }
+            //Console.WriteLine($"Included Dates from {start}");
+            //List<DateTime> d = Day.IncludedDates(dtList, start.AddDays(4));
+            //foreach (DateTime dt in d)
+            //{
+            //    Console.WriteLine(dt);
+            //}
 
+            //Console.WriteLine(Day.IncludedIdx(dtList, start.AddDays(4)));
+            //Console.ReadLine();
 
-            Console.WriteLine($"Included Dates from {start}");
-            List<DateTime> d = Day.IncludedDates(dtList, start.AddDays(4));
-            foreach (DateTime dt in d)
-            {
-                Console.WriteLine(dt);
-            }
+            //included dates [end]
 
-            Console.WriteLine(Day.IncludedIdx(dtList, start.AddDays(4)));
+            Console.WriteLine($"Years: {age.Years}\nQuarters: {age.Quarters}\nMonths: {age.Months}\nWeeks: {age.Weeks}\nDays: {age.Days}\nHours: {age.Hours}\nMinutes: {age.Minutes}\nSeconds: {age.Seconds}\n\n");
+            Console.WriteLine(age.GetString(3));
             Console.ReadLine();
-
-            
         }
     }
 
@@ -111,15 +114,15 @@ namespace Aging
             return !((leftHand.Where(x => x != null).Count()) == rightHand.Where(x => x != null).Count());
         }
 
-        public static bool operator ==(Range<T> leftHand, Range<T> rightHand)
-        {
-            return ((leftHand.Where(x => x != null).Count()) == rightHand.Where(x => x != null).Count());
-        }
+        //public static bool operator ==(Range<T> leftHand, Range<T> rightHand)
+        //{
+        //    return ((leftHand.Where(x => x != null).Count()) == rightHand.Where(x => x != null).Count());
+        //}
 
-        public static bool operator !=(Range<T> leftHand, Range<T> rightHand)
-        {
-            return !((leftHand.Where(x => x != null).Count()) == rightHand.Where(x => x != null).Count());
-        }
+        //public static bool operator !=(Range<T> leftHand, Range<T> rightHand)
+        //{
+        //    return !((leftHand.Where(x => x != null).Count()) == rightHand.Where(x => x != null).Count());
+        //}
 
         #endregion
 
@@ -186,40 +189,71 @@ namespace Aging
             return temp;
         }
 
-        public static KeyValuePair<int, int> IncludedIdx(List<DateTime> sortedListAsc, DateTime start, DateTime? end = null)
-        {
-            end = end ?? DateTime.Now;
-            int? startIdx = null;
-            int? endIdx = null;
-            for (int x = 0; x < sortedListAsc.Count; x++)
-            {
-                startIdx = (startIdx == null) ? ((sortedListAsc[x] >= start && sortedListAsc[x] <= end) ? x : (int?)(null) ) : startIdx;
-                if (startIdx != null) break;
-            }
-            for (int x = sortedListAsc.Count - 1; x >= 0; x++)
-            {
-                endIdx = (endIdx == null) ? ((sortedListAsc[x] >= start && sortedListAsc[x] <= end) ? x : (int?)(null)) : endIdx;
-                if (endIdx != null) break;
-            }
-            return new KeyValuePair<int, int>( (int)startIdx, (int)endIdx );
-        }
+
+        //temporary closed
+        //public static KeyValuePair<int, int> IncludedIdx(List<DateTime> sortedListAsc, DateTime start, DateTime? end = null)
+        //{
+        //    end = end ?? DateTime.Now;
+        //    int? startIdx = null;
+        //    int? endIdx = null;
+        //    for (int x = 0; x < sortedListAsc.Count; x++)
+        //    {
+        //        startIdx = (startIdx == null) ? ((sortedListAsc[x] >= start && sortedListAsc[x] <= end) ? x : (int?)(null) ) : startIdx;
+        //        if (startIdx != null) break;
+        //    }
+        //    for (int x = sortedListAsc.Count - 1; x >= 0; x++)
+        //    {
+        //        endIdx = (endIdx == null) ? ((sortedListAsc[x] >= start && sortedListAsc[x] <= end) ? x : (int?)(null)) : endIdx;
+        //        if (endIdx != null) break;
+        //    }
+        //    return new KeyValuePair<int, int>( (int)startIdx, (int)endIdx );
+        //}
     }
 
     public class Age
     {
-        
+        public enum Combi
+        {
+            MIN         = 0,    //default - addaptive
+            SECONDMIN,
+            SECONDMAX,
+            MINUTEMIN,
+            MINUTEMAX,
+            HOURMIN,
+            HOURMAX,
+            DAYMIN,
+            DAYMAX,
+            WEEKMIN,
+            WEEKMAX,
+            MONTHMIN,
+            MONTHMAX,
+            QUARTERMIN,
+            QUARTERMAX,
+            YEARMIN,
+            YEARMAX,
+            OUTOFBOUND,
+        }
 
         public DateTime start { get; set; }
         public DateTime end { get; set; }
         public DateTime current { get; set; }
+        public TimeSpan diff { get { return (end - start); } }
 
         public int Years { get; set; }
         public int Months { get; set; }
         public int Days { get; set; }
 
+        public int Quarters { get { return (Months / 4); } }
+        public int Weeks { get { return (Days / 7); } }
+        public int Hours { get { return (diff.Hours % 24 ); } }
+        public int Minutes { get { return (diff.Minutes % 60); } }
+        public int Seconds { get { return (diff.Seconds % 60); } }
+
         public int TotalYears { get { return GetYear(start, end); } }
         public int TotalMonths { get { return GetMonth(start, end); } }
         public int TotalDays { get { return GetDay(start, end); } }
+
+        public int UnitCount { get; set; }
 
         public Age()
         {
@@ -237,12 +271,40 @@ namespace Aging
             DateTime end = (End ?? DateTime.Now);
             TimeSpan dateDiff = end - start;
             current = start;
-
+            this.start = start;
+            this.end = end; 
             Years = GetYear(current, end);
             Months = GetMonth(current, end);
             Days = GetDay(current, end);
+        }
 
-            return;
+        public string GetString(int unitCountMax, int? unitCountMin = null)
+        {
+            UnitCount = unitCountMin ?? (int)Combi.MIN;
+            List<KeyValuePair<string, int>> set = new List<KeyValuePair<string, int>>();
+            set.Add(new KeyValuePair<string, int>("Years", Years));
+            set.Add(new KeyValuePair<string, int>("Months", Months));
+            set.Add(new KeyValuePair<string, int>("Weeks", Weeks));
+            set.Add(new KeyValuePair<string, int>("Days", Days));
+            set.Add(new KeyValuePair<string, int>("Hours", Hours));
+            set.Add(new KeyValuePair<string, int>("Minutes", Minutes));
+            set.Add(new KeyValuePair<string, int>("Seconds", Seconds));
+
+            int x = 0;
+            int unitCounter = 0;
+            int unitAccumulator = 0;
+            string str = null;
+            for(; (unitCounter < set.Count) && (unitAccumulator < unitCountMax); )
+            {
+                if (set.ElementAt(unitCounter).Value > 0)
+                {
+                    str += $"{set.ElementAt(unitCounter).Key}: {set.ElementAt(unitCounter).Value} ";
+                    unitAccumulator++;
+                }
+                unitCounter++;
+            }
+
+            return str;
         }
 
         public int GetYear(DateTime start, DateTime? End = null)
