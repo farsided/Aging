@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 //using calcdll;
 namespace Aging
@@ -21,7 +22,7 @@ namespace Aging
             //var endFormat = "dd/MM/yyyy hh:mm:ss tt";
 
             var s = "03/28/2022 12:00:00 AM";
-            var e = "03/28/2022 11:02:08 PM";
+            var e = "03/28/2023 11:01:00 PM";
 
             start = Convert.ToDateTime(s, culture);
             end = Convert.ToDateTime(e, culture);
@@ -278,19 +279,18 @@ namespace Aging
             Days = GetDay(current, end);
         }
 
-        public string GetString(int unitCountMax, int? unitCountMin = null)
+        public string GetString(int unitCountMax, string suffix = "s", string replacement = "&", int? unitCountMin = null)
         {
             UnitCount = unitCountMin ?? (int)Combi.MIN;
             List<KeyValuePair<string, int>> set = new List<KeyValuePair<string, int>>();
-            set.Add(new KeyValuePair<string, int>("Years", Years));
-            set.Add(new KeyValuePair<string, int>("Months", Months));
-            set.Add(new KeyValuePair<string, int>("Weeks", Weeks));
-            set.Add(new KeyValuePair<string, int>("Days", Days));
-            set.Add(new KeyValuePair<string, int>("Hours", Hours));
-            set.Add(new KeyValuePair<string, int>("Minutes", Minutes));
-            set.Add(new KeyValuePair<string, int>("Seconds", Seconds));
+            set.Add(new KeyValuePair<string, int>("Year", Years));
+            set.Add(new KeyValuePair<string, int>("Month", Months));
+            set.Add(new KeyValuePair<string, int>("Week", Weeks));
+            set.Add(new KeyValuePair<string, int>("Day", Days));
+            set.Add(new KeyValuePair<string, int>("Hour", Hours));
+            set.Add(new KeyValuePair<string, int>("Minute", Minutes));
+            set.Add(new KeyValuePair<string, int>("Second", Seconds));
 
-            int x = 0;
             int unitCounter = 0;
             int unitAccumulator = 0;
             string str = null;
@@ -298,13 +298,28 @@ namespace Aging
             {
                 if (set.ElementAt(unitCounter).Value > 0)
                 {
-                    str += $"{set.ElementAt(unitCounter).Key}: {set.ElementAt(unitCounter).Value} ";
+                    str += $"{set.ElementAt(unitCounter).Value} {set.ElementAt(unitCounter).Key}{(set.ElementAt(unitCounter).Value > 1 ? suffix : "")}, ";
                     unitAccumulator++;
                 }
                 unitCounter++;
             }
+            if(str.Length > 0)
+            {
+                str = str.Remove(str.Length - 2,2);
+            }
+
+            Compose(ref str, unitAccumulator, replacement);
 
             return str;
+        }
+
+        public void Compose(ref string str, int objCounter, string replacement = " &")
+        {
+            if(objCounter > 1)
+            {
+                str = str.Insert(str.LastIndexOf(',') + 1, " " + replacement);
+                str = str.Remove(str.LastIndexOf(','), 1);
+            }
         }
 
         public int GetYear(DateTime start, DateTime? End = null)
