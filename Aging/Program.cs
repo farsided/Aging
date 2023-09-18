@@ -22,7 +22,7 @@ namespace Aging
             //var endFormat = "dd/MM/yyyy hh:mm:ss tt";
 
             var s = "03/28/2022 12:00:00 AM";
-            var e = "03/28/2023 11:01:00 PM";
+            var e = "04/21/2023 11:01:02 PM";
 
             start = Convert.ToDateTime(s, culture);
             end = Convert.ToDateTime(e, culture);
@@ -30,7 +30,7 @@ namespace Aging
             //Console.WriteLine(start);
             ////Console.WriteLine(end);
 
-            Age age = new Age(start, end);
+            Age age = new Age(start,end);
             //Console.WriteLine( $"Years: {age.Years}\nMonths: {age.Months}\nDays: {age.Days}" );
             //Console.WriteLine($"CurrentDate: {age.current}");
 
@@ -70,7 +70,7 @@ namespace Aging
             //included dates [end]
 
             Console.WriteLine($"Years: {age.Years}\nQuarters: {age.Quarters}\nMonths: {age.Months}\nWeeks: {age.Weeks}\nDays: {age.Days}\nHours: {age.Hours}\nMinutes: {age.Minutes}\nSeconds: {age.Seconds}\n\n");
-            Console.WriteLine(age.GetString(3));
+            Console.WriteLine(age.GetString(4, separator: ','));
             Console.ReadLine();
         }
     }
@@ -245,7 +245,7 @@ namespace Aging
         public int Days { get; set; }
 
         public int Quarters { get { return (Months / 4); } }
-        public int Weeks { get { return (Days / 7); } }
+        public int Weeks { get { return Days / 7; } }
         public int Hours { get { return (diff.Hours % 24 ); } }
         public int Minutes { get { return (diff.Minutes % 60); } }
         public int Seconds { get { return (diff.Seconds % 60); } }
@@ -279,14 +279,14 @@ namespace Aging
             Days = GetDay(current, end);
         }
 
-        public string GetString(int unitCountMax, string suffix = "s", string replacement = "&", int? unitCountMin = null)
+        public string GetString(int unitCountMax, string suffix = "s", string replacement = "&", char separator = ',', int? unitCountMin = null)
         {
             UnitCount = unitCountMin ?? (int)Combi.MIN;
             List<KeyValuePair<string, int>> set = new List<KeyValuePair<string, int>>();
             set.Add(new KeyValuePair<string, int>("Year", Years));
             set.Add(new KeyValuePair<string, int>("Month", Months));
             set.Add(new KeyValuePair<string, int>("Week", Weeks));
-            set.Add(new KeyValuePair<string, int>("Day", Days));
+            set.Add(new KeyValuePair<string, int>("Day", Days % 7));
             set.Add(new KeyValuePair<string, int>("Hour", Hours));
             set.Add(new KeyValuePair<string, int>("Minute", Minutes));
             set.Add(new KeyValuePair<string, int>("Second", Seconds));
@@ -298,27 +298,27 @@ namespace Aging
             {
                 if (set.ElementAt(unitCounter).Value > 0)
                 {
-                    str += $"{set.ElementAt(unitCounter).Value} {set.ElementAt(unitCounter).Key}{(set.ElementAt(unitCounter).Value > 1 ? suffix : "")}, ";
+                    str += $"{set.ElementAt(unitCounter).Value} {set.ElementAt(unitCounter).Key}{(set.ElementAt(unitCounter).Value > 1 ? suffix : "")}{separator.ToString()} ";
                     unitAccumulator++;
                 }
                 unitCounter++;
             }
             if(str.Length > 0)
             {
-                str = str.Remove(str.Length - 2,2);
+                str = str.Remove(str.Length - 2, 2);
             }
 
-            Compose(ref str, unitAccumulator, replacement);
+            Compose(ref str, unitAccumulator, replacement:replacement, separator: separator);
 
             return str;
         }
 
-        public void Compose(ref string str, int objCounter, string replacement = " &")
+        public void Compose(ref string str, int objCounter, string replacement = "&", char separator = ',')
         {
             if(objCounter > 1)
             {
-                str = str.Insert(str.LastIndexOf(',') + 1, " " + replacement);
-                str = str.Remove(str.LastIndexOf(','), 1);
+                str = str.Insert(str.LastIndexOf(separator) + 1, " " + replacement);
+                str = str.Remove(str.LastIndexOf(separator), 1);
             }
         }
 
