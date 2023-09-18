@@ -21,8 +21,8 @@ namespace Aging
             //var startFormat = "dd/MM/yyyy hh:mm:ss tt";
             //var endFormat = "dd/MM/yyyy hh:mm:ss tt";
 
-            var s = "03/28/2022 12:00:00 AM";
-            var e = "04/21/2023 11:01:02 PM";
+            var s = "02/29/2020 12:00:00 AM";
+            var e = "03/01/2021 12:00:00 AM";
 
             start = Convert.ToDateTime(s, culture);
             end = Convert.ToDateTime(e, culture);
@@ -279,26 +279,30 @@ namespace Aging
             Days = GetDay(current, end);
         }
 
+        public List<KeyValuePair<string, int>> TimeUnits { get {
+                List<KeyValuePair<string, int>> set = new List<KeyValuePair<string, int>>();
+                set.Add(new KeyValuePair<string, int>("Year", Years));
+                set.Add(new KeyValuePair<string, int>("Month", Months));
+                set.Add(new KeyValuePair<string, int>("Week", Weeks));
+                set.Add(new KeyValuePair<string, int>("Day", Days % 7));
+                set.Add(new KeyValuePair<string, int>("Hour", Hours));
+                set.Add(new KeyValuePair<string, int>("Minute", Minutes));
+                set.Add(new KeyValuePair<string, int>("Second", Seconds));
+                return set; } }
+
         public string GetString(int unitCountMax, string suffix = "s", string replacement = "&", char separator = ',', int? unitCountMin = null)
         {
             UnitCount = unitCountMin ?? (int)Combi.MIN;
-            List<KeyValuePair<string, int>> set = new List<KeyValuePair<string, int>>();
-            set.Add(new KeyValuePair<string, int>("Year", Years));
-            set.Add(new KeyValuePair<string, int>("Month", Months));
-            set.Add(new KeyValuePair<string, int>("Week", Weeks));
-            set.Add(new KeyValuePair<string, int>("Day", Days % 7));
-            set.Add(new KeyValuePair<string, int>("Hour", Hours));
-            set.Add(new KeyValuePair<string, int>("Minute", Minutes));
-            set.Add(new KeyValuePair<string, int>("Second", Seconds));
 
             int unitCounter = 0;
             int unitAccumulator = 0;
             string str = null;
-            for(; (unitCounter < set.Count) && (unitAccumulator < unitCountMax); )
+            List<KeyValuePair<string, int>> timeUnits = TimeUnits;
+            for (; (unitCounter < timeUnits.Count) && (unitAccumulator < unitCountMax); )
             {
-                if (set.ElementAt(unitCounter).Value > 0)
+                if (timeUnits.ElementAt(unitCounter).Value > 0)
                 {
-                    str += $"{set.ElementAt(unitCounter).Value} {set.ElementAt(unitCounter).Key}{(set.ElementAt(unitCounter).Value > 1 ? suffix : "")}{separator.ToString()} ";
+                    str += $"{timeUnits.ElementAt(unitCounter).Value} {timeUnits.ElementAt(unitCounter).Key}{(timeUnits.ElementAt(unitCounter).Value > 1 ? suffix : "")}{separator.ToString()} ";
                     unitAccumulator++;
                 }
                 unitCounter++;
