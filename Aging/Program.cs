@@ -1,9 +1,13 @@
-﻿using System;
+﻿//for checking
+//browse the link:  https://www.timeanddate.com/date/durationresult.html?d1=1&m1=3&y1=1900&d2=24&m2=2&y2=2021
+//and this:         https://www.timeanddate.com/date/durationresult.html?d1=28&m1=2&y1=1900&d2=24&m2=2&y2=2021
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 //using calcdll;
 namespace Aging
@@ -21,16 +25,42 @@ namespace Aging
             //var startFormat = "dd/MM/yyyy hh:mm:ss tt";
             //var endFormat = "dd/MM/yyyy hh:mm:ss tt";
 
-            var s = "02/29/2020 12:00:00 AM";
-            var e = "03/01/2021 12:00:00 AM";
+            var s = "02/28/1900 12:00:00 AM";
+            var e = "02/24/2021 11:59:59 AM";
 
             start = Convert.ToDateTime(s, culture);
             end = Convert.ToDateTime(e, culture);
 
-            //Console.WriteLine(start);
-            ////Console.WriteLine(end);
+            Console.WriteLine(start);
+            Console.WriteLine(end);
 
-            Age age = new Age(start,end);
+            Age age = new Age(start, end);
+            Thread ageThread = new Thread(() =>
+            {
+                Console.WriteLine($"ageThread no added days:{start}");
+                
+                Console.WriteLine($"ageThread date: {age.start}");
+                Console.WriteLine($"ageThread date: {age.end}");
+                Console.WriteLine($"ageThread\nYears: {age.Years}\nQuarters: {age.Quarters}\nMonths: {age.Months}\nWeeks: {age.Weeks}\nDays: {age.Days}\nHours: {age.Hours}\nMinutes: {age.Minutes}\nSeconds: {age.Seconds}\n\n");
+                Console.WriteLine(age.GetString(7, separator: ',', unitLong: true));
+                Console.WriteLine();
+            });
+
+
+            Age age1 = new Age(start.AddDays(1), end);
+            Thread age1Thread = new Thread(()=>
+            {
+                Console.WriteLine($"age1Thread added days:{start.AddDays(1)}");
+                
+                Console.WriteLine($"age1Thread date: {age1.start}");
+                Console.WriteLine($"age1Thread date: {age1.end}");
+                Console.WriteLine($"age1Thread\nYears: {age1.Years}\nQuarters: {age1.Quarters}\nMonths: {age1.Months}\nWeeks: {age1.Weeks}\nDays: {age1.Days}\nHours: {age1.Hours}\nMinutes: {age1.Minutes}\nSeconds: {age1.Seconds}\n\n");
+                Console.WriteLine(age1.GetString(7, separator: ',', unitLong: true));
+                Console.WriteLine();
+            });
+
+            ageThread.Start();
+            age1Thread.Start();
             //Console.WriteLine( $"Years: {age.Years}\nMonths: {age.Months}\nDays: {age.Days}" );
             //Console.WriteLine($"CurrentDate: {age.current}");
 
@@ -69,8 +99,7 @@ namespace Aging
 
             //included dates [end]
 
-            Console.WriteLine($"Years: {age.Years}\nQuarters: {age.Quarters}\nMonths: {age.Months}\nWeeks: {age.Weeks}\nDays: {age.Days}\nHours: {age.Hours}\nMinutes: {age.Minutes}\nSeconds: {age.Seconds}\n\n");
-            Console.WriteLine(age.GetString(4, separator: ','));
+
             Console.ReadLine();
         }
     }
@@ -274,6 +303,7 @@ namespace Aging
             current = start;
             this.start = start;
             this.end = end; 
+
             Years = GetYear(current, end);
             Months = GetMonth(current, end);
             Days = GetDay(current, end);
@@ -290,19 +320,37 @@ namespace Aging
                 set.Add(new KeyValuePair<string, int>("Second", Seconds));
                 return set; } }
 
-        public string GetString(int unitCountMax, string suffix = "s", string replacement = "&", char separator = ',', int? unitCountMin = null)
+        public List<KeyValuePair<string, int>> TimeUnitsShort
         {
-            UnitCount = unitCountMin ?? (int)Combi.MIN;
+            get
+            {
+                List<KeyValuePair<string, int>> set = new List<KeyValuePair<string, int>>();
+                set.Add(new KeyValuePair<string, int>("Y", Years));
+                set.Add(new KeyValuePair<string, int>("M", Months));
+                set.Add(new KeyValuePair<string, int>("W", Weeks));
+                set.Add(new KeyValuePair<string, int>("D", Days % 7));
+                set.Add(new KeyValuePair<string, int>("h", Hours));
+                set.Add(new KeyValuePair<string, int>("m", Minutes));
+                set.Add(new KeyValuePair<string, int>("s", Seconds));
+                return set;
+            }
+        }
+
+
+
+        public string GetString(int unitCountMax, string suffix = "s", string replacement = "&", char separator = ',', int? unitCountMin = null, bool unitLong = false)
+        {
+            
 
             int unitCounter = 0;
             int unitAccumulator = 0;
             string str = null;
-            List<KeyValuePair<string, int>> timeUnits = TimeUnits;
+            List<KeyValuePair<string, int>> timeUnits = unitLong ? TimeUnits : TimeUnitsShort;
             for (; (unitCounter < timeUnits.Count) && (unitAccumulator < unitCountMax); )
             {
                 if (timeUnits.ElementAt(unitCounter).Value > 0)
                 {
-                    str += $"{timeUnits.ElementAt(unitCounter).Value} {timeUnits.ElementAt(unitCounter).Key}{(timeUnits.ElementAt(unitCounter).Value > 1 ? suffix : "")}{separator.ToString()} ";
+                    str += $"{timeUnits.ElementAt(unitCounter).Value}{(unitLong ? " ":"")}{timeUnits.ElementAt(unitCounter).Key}{(timeUnits.ElementAt(unitCounter).Value > 1 ? ( unitLong ? suffix : "") : "")}{separator.ToString()} ";
                     unitAccumulator++;
                 }
                 unitCounter++;
@@ -313,6 +361,7 @@ namespace Aging
             }
 
             Compose(ref str, unitAccumulator, replacement:replacement, separator: separator);
+            UnitCount = unitAccumulator;
 
             return str;
         }
