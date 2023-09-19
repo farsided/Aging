@@ -25,6 +25,22 @@ namespace Aging
             //var startFormat = "dd/MM/yyyy hh:mm:ss tt";
             //var endFormat = "dd/MM/yyyy hh:mm:ss tt";
 
+            int total = 0;
+            int num1=0, num2=0, num3=0, num4=0;
+
+            Thread thread1 = new Thread(()=> { num1 = 1; });
+            Thread thread2 = new Thread(() => { num2 = 2; });
+            Thread thread3 = new Thread(() => { num3 = 3; });
+            Thread thread4 = new Thread(() => { num4 = 4; });
+
+            thread1.Start();
+            thread2.Start();
+            thread3.Start();
+            thread4.Start();
+
+            total = num1 + num2 + num3 + num4;
+            Console.WriteLine($"total: {total}\nnum1: {num1}\nnum2: {num2}\nnum3: {num3}\nnum4: {num4}");
+
             var s = "02/28/1900 12:00:00 AM";
             var e = "02/24/2021 11:59:59 AM";
 
@@ -292,17 +308,14 @@ namespace Aging
 
         public Age(DateTime start, DateTime? End = null)
         {
-            DateTime end = (End ?? DateTime.Now);
-            Init(start, end);
+            Init(start, End);
         }
 
         public void Init(DateTime start, DateTime? End = null)
         {
-            DateTime end = (End ?? DateTime.Now);
-            TimeSpan dateDiff = end - start;
             current = start;
             this.start = start;
-            this.end = end; 
+            this.end = (End ?? DateTime.Now);
 
             Years = GetYear(current, end);
             Months = GetMonth(current, end);
@@ -336,33 +349,32 @@ namespace Aging
             }
         }
 
-
-
         public string GetString(int unitCountMax, string suffix = "s", string replacement = "&", char separator = ',', int? unitCountMin = null, bool unitLong = false)
         {
-            
-
-            int unitCounter = 0;
             int unitAccumulator = 0;
-            string str = null;
             List<KeyValuePair<string, int>> timeUnits = unitLong ? TimeUnits : TimeUnitsShort;
-            for (; (unitCounter < timeUnits.Count) && (unitAccumulator < unitCountMax); )
+            string str = InitializeString(unitCountMax, timeUnits, unitAccumulator: ref unitAccumulator);
+            Compose(ref str, objCounter: unitAccumulator, replacement:replacement, separator: separator);
+            UnitCount = unitAccumulator;
+            return str;
+        }
+
+        private string InitializeString(int unitCountMax, List<KeyValuePair<string, int>> timeUnits, ref int unitAccumulator, string suffix = "s", char separator = ',', int unitCounter = 0, bool unitLong = false )
+        {
+            string str = null;
+            for (; (unitCounter < timeUnits.Count) && (unitAccumulator < unitCountMax);)
             {
                 if (timeUnits.ElementAt(unitCounter).Value > 0)
                 {
-                    str += $"{timeUnits.ElementAt(unitCounter).Value}{(unitLong ? " ":"")}{timeUnits.ElementAt(unitCounter).Key}{(timeUnits.ElementAt(unitCounter).Value > 1 ? ( unitLong ? suffix : "") : "")}{separator.ToString()} ";
+                    str += $"{timeUnits.ElementAt(unitCounter).Value}{(unitLong ? " " : "")}{timeUnits.ElementAt(unitCounter).Key}{(timeUnits.ElementAt(unitCounter).Value > 1 ? (unitLong ? suffix : "") : "")}{separator.ToString()} ";
                     unitAccumulator++;
                 }
                 unitCounter++;
             }
-            if(str.Length > 0)
+            if (str.Length > 0)
             {
                 str = str.Remove(str.Length - 2, 2);
             }
-
-            Compose(ref str, unitAccumulator, replacement:replacement, separator: separator);
-            UnitCount = unitAccumulator;
-
             return str;
         }
 
