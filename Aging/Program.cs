@@ -9,7 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-//using calcdll;
+//using CalcDll;
 namespace Aging
 {
     class Program
@@ -41,7 +41,7 @@ namespace Aging
             total = num1 + num2 + num3 + num4;
             Console.WriteLine($"total: {total}\nnum1: {num1}\nnum2: {num2}\nnum3: {num3}\nnum4: {num4}");
 
-            var s = "02/28/1900 12:00:00 AM";
+            var s = "04/19/2021 12:00:00 AM";
             var e = "02/24/2021 11:59:59 AM";
 
             start = Convert.ToDateTime(s, culture);
@@ -50,7 +50,7 @@ namespace Aging
             Console.WriteLine(start);
             Console.WriteLine(end);
 
-            Age age = new Age(start, end);
+            Age age = new Age(start:start);
             Thread ageThread = new Thread(() =>
             {
                 Console.WriteLine($"ageThread no added days:{start}");
@@ -58,25 +58,25 @@ namespace Aging
                 Console.WriteLine($"ageThread date: {age.start}");
                 Console.WriteLine($"ageThread date: {age.end}");
                 Console.WriteLine($"ageThread\nYears: {age.Years}\nQuarters: {age.Quarters}\nMonths: {age.Months}\nWeeks: {age.Weeks}\nDays: {age.Days}\nHours: {age.Hours}\nMinutes: {age.Minutes}\nSeconds: {age.Seconds}\n\n");
-                Console.WriteLine(age.GetString(7, separator: ',', unitLong: true));
+                Console.WriteLine(age.GetString(3, separator: ',', unitLong: true));
                 Console.WriteLine();
             });
 
 
-            Age age1 = new Age(start.AddDays(1), end);
-            Thread age1Thread = new Thread(()=>
-            {
-                Console.WriteLine($"age1Thread added days:{start.AddDays(1)}");
+            //Age age1 = new Age(start.AddDays(1), end);
+            //Thread age1Thread = new Thread(()=>
+            //{
+            //    Console.WriteLine($"age1Thread added days:{start.AddDays(1)}");
                 
-                Console.WriteLine($"age1Thread date: {age1.start}");
-                Console.WriteLine($"age1Thread date: {age1.end}");
-                Console.WriteLine($"age1Thread\nYears: {age1.Years}\nQuarters: {age1.Quarters}\nMonths: {age1.Months}\nWeeks: {age1.Weeks}\nDays: {age1.Days}\nHours: {age1.Hours}\nMinutes: {age1.Minutes}\nSeconds: {age1.Seconds}\n\n");
-                Console.WriteLine(age1.GetString(7, separator: ',', unitLong: true));
-                Console.WriteLine();
-            });
+            //    Console.WriteLine($"age1Thread date: {age1.start}");
+            //    Console.WriteLine($"age1Thread date: {age1.end}");
+            //    Console.WriteLine($"age1Thread\nYears: {age1.Years}\nQuarters: {age1.Quarters}\nMonths: {age1.Months}\nWeeks: {age1.Weeks}\nDays: {age1.Days}\nHours: {age1.Hours}\nMinutes: {age1.Minutes}\nSeconds: {age1.Seconds}\n\n");
+            //    Console.WriteLine(age1.GetString(7, separator: ',', unitLong: true));
+            //    Console.WriteLine();
+            //});
 
             ageThread.Start();
-            age1Thread.Start();
+            //age1Thread.Start();
             //Console.WriteLine( $"Years: {age.Years}\nMonths: {age.Months}\nDays: {age.Days}" );
             //Console.WriteLine($"CurrentDate: {age.current}");
 
@@ -256,11 +256,13 @@ namespace Aging
         //}
     }
 
+    #region Age Test Ground
+    #region Commnet This
     public class Age
     {
         public enum Combi
         {
-            MIN         = 0,    //default - addaptive
+            MIN = 0,    //default - addaptive
             SECONDMIN,
             SECONDMAX,
             MINUTEMIN,
@@ -291,7 +293,7 @@ namespace Aging
 
         public int Quarters { get { return (Months / 4); } }
         public int Weeks { get { return Days / 7; } }
-        public int Hours { get { return (diff.Hours % 24 ); } }
+        public int Hours { get { return (diff.Hours % 24); } }
         public int Minutes { get { return (diff.Minutes % 60); } }
         public int Seconds { get { return (diff.Seconds % 60); } }
 
@@ -322,7 +324,10 @@ namespace Aging
             Days = GetDay(current, end);
         }
 
-        public List<KeyValuePair<string, int>> TimeUnits { get {
+        public List<KeyValuePair<string, int>> TimeUnits
+        {
+            get
+            {
                 List<KeyValuePair<string, int>> set = new List<KeyValuePair<string, int>>();
                 set.Add(new KeyValuePair<string, int>("Year", Years));
                 set.Add(new KeyValuePair<string, int>("Month", Months));
@@ -331,7 +336,9 @@ namespace Aging
                 set.Add(new KeyValuePair<string, int>("Hour", Hours));
                 set.Add(new KeyValuePair<string, int>("Minute", Minutes));
                 set.Add(new KeyValuePair<string, int>("Second", Seconds));
-                return set; } }
+                return set;
+            }
+        }
 
         public List<KeyValuePair<string, int>> TimeUnitsShort
         {
@@ -349,24 +356,24 @@ namespace Aging
             }
         }
 
-        public string GetString(int unitCountMax, string suffix = "s", string replacement = "&", char separator = ',', int? unitCountMin = null, bool unitLong = false)
+        public string GetString(int unitCountMax, string suffix = "s", string replacement = "&", char separator = ',', int? unitCountMin = null, bool unitLong = true)
         {
             int unitAccumulator = 0;
             List<KeyValuePair<string, int>> timeUnits = unitLong ? TimeUnits : TimeUnitsShort;
-            string str = InitializeString(unitCountMax, timeUnits, unitAccumulator: ref unitAccumulator);
-            Compose(ref str, objCounter: unitAccumulator, replacement:replacement, separator: separator);
+            string str = InitializeString(unitCountMax, timeUnits, unitAccumulator: ref unitAccumulator, unitLong: unitLong);
+            Compose(ref str, objCounter: unitAccumulator, replacement: replacement, separator: separator);
             UnitCount = unitAccumulator;
             return str;
         }
 
-        private string InitializeString(int unitCountMax, List<KeyValuePair<string, int>> timeUnits, ref int unitAccumulator, string suffix = "s", char separator = ',', int unitCounter = 0, bool unitLong = false )
+        private string InitializeString(int unitCountMax, List<KeyValuePair<string, int>> timeUnits, ref int unitAccumulator, string suffix = "s", char separator = ',', int unitCounter = 0, bool unitLong = true)
         {
             string str = null;
             for (; (unitCounter < timeUnits.Count) && (unitAccumulator < unitCountMax);)
             {
                 if (timeUnits.ElementAt(unitCounter).Value > 0)
                 {
-                    str += $"{timeUnits.ElementAt(unitCounter).Value}{(unitLong ? " " : "")}{timeUnits.ElementAt(unitCounter).Key}{(timeUnits.ElementAt(unitCounter).Value > 1 ? (unitLong ? suffix : "") : "")}{separator.ToString()} ";
+                    str += $"{timeUnits.ElementAt(unitCounter).Value}{(unitLong ? " " : "")}{timeUnits.ElementAt(unitCounter).Key}{(timeUnits.ElementAt(unitCounter).Value > 1 ? (unitLong ? (suffix) : ("")) : "")}{separator.ToString()} ";
                     unitAccumulator++;
                 }
                 unitCounter++;
@@ -380,7 +387,7 @@ namespace Aging
 
         public void Compose(ref string str, int objCounter, string replacement = "&", char separator = ',')
         {
-            if(objCounter > 1)
+            if (objCounter > 1)
             {
                 str = str.Insert(str.LastIndexOf(separator) + 1, " " + replacement);
                 str = str.Remove(str.LastIndexOf(separator), 1);
@@ -417,7 +424,7 @@ namespace Aging
                 {
                     if ((dateDiff.Days >= DateTime.DaysInMonth(current.Year, current.Month)) || (current.Year <= end.Year))
                     {
-                        if (current < end.AddMonths(-1) )
+                        if (current < end.AddMonths(-1))
                         {
                             current = current.AddMonths(1);
                             dateDiff = end - current;
@@ -445,7 +452,9 @@ namespace Aging
             return dayDiff;//(int)Math.Floor((((DateTime)End - start).TotalHours / 24));
         }
     }
+    #endregion Comment this
 
+    #endregion Age Test Ground
     class Rate
     {
         enum RateType
